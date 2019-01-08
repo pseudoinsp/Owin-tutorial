@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using Nancy.Owin;
 using Nancy;
+using System.Web.Http;
 
 /// <summary>
 /// Summary description for Class1
@@ -30,12 +31,16 @@ public class Startup
             }
         });
 
+        var config = new HttpConfiguration();
+        config.MapHttpAttributeRoutes();
+        app.UseWebApi(config);
+
         // To only use it when the path is matching "/nancy"
         // other option is the NancyOptions, see below  
         //app.Map("/nancy", mappedApp => { mappedApp.UseNancy(); });
-        app.UseNancy(config =>
+        app.UseNancy(options =>
         {
-            config.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
+            options.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
         });
 
         app.Use(async (ctx, next) =>
