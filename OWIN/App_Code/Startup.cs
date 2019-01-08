@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using Nancy.Owin;
+using Nancy;
 
 /// <summary>
 /// Summary description for Class1
@@ -26,7 +28,15 @@ public class Startup
                 watch.Stop();
                 Debug.WriteLine($"Request took: {watch.ElapsedMilliseconds} ms");
             }
-        }); 
+        });
+
+        // To only use it when the path is matching "/nancy"
+        // other option is the NancyOptions, see below  
+        //app.Map("/nancy", mappedApp => { mappedApp.UseNancy(); });
+        app.UseNancy(config =>
+        {
+            config.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
+        });
 
         app.Use(async (ctx, next) =>
         {

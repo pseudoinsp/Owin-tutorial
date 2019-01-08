@@ -14,6 +14,6 @@ public static class DebugMiddlewareExtensions
         if (options == null)
             options = new DebugMiddlewareOptions();
 
-        app.Use<DebugMiddlewareOptions>(options);
+        app.Use<DebugMiddleware>(options);
     }
 }
