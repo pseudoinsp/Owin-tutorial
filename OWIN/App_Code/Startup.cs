@@ -12,14 +12,21 @@ public class Startup
 {
     public static void Configuration(IAppBuilder app)
     {
-        app.Use(async (ctx, next) =>
+        app.UseDebugMiddleware(new DebugMiddlewareOptions()
         {
-            Debug.WriteLine("Incoming request: " + ctx.Request.Path);
+            OnIncomingRequest = (ctx) =>
+            {
+                var watch = Stopwatch.StartNew();
+                ctx.Environment["DebugStopwatch"] = watch;
+            },
 
-            await next();
-
-            Debug.WriteLine("Outgpoing response: " + ctx.Request.Path);
-        });
+            OnOutgoingRequest = (ctx) =>
+            {
+                var watch = (Stopwatch)ctx.Environment["DebugStopwatch"];
+                watch.Stop();
+                Debug.WriteLine($"Request took: {watch.ElapsedMilliseconds} ms");
+            }
+        }); 
 
         app.Use(async (ctx, next) =>
         {
